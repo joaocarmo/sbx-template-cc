@@ -16,13 +16,13 @@ concurrency:
 env:
   IMAGE: docker.io/${{ vars.DOCKERHUB_NAMESPACE }}/claude-extended
   SBX_VERSION: v0.49.1
-  # Bump together with SBX_VERSION: sha256 of DockerSandboxes-linux-amd64-ubuntu2404.deb
-  SBX_DEB_SHA256: 9536d6a07270aa7a75752106d90257115bce20898056b4d798bc48f67c116bf9
+  # Bump together with SBX_VERSION: sha256 of DockerSandboxes-linux-amd64-ubuntu2604.deb
+  SBX_DEB_SHA256: 3d105f3e2e40064ebecbe3eb598fa71247436362210be4e8d34fdb8d3c1f9945
 
 jobs:
   # docker/github-builder fails here: its BuildKit lacks moby.buildkit.frontend.inputs, which the sandbox-kit frontend needs.
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
       id-token: write
@@ -70,9 +70,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release download "$SBX_VERSION" -R docker/sbx-releases -p 'DockerSandboxes-linux-amd64-ubuntu2404.deb'
-          echo "$SBX_DEB_SHA256  DockerSandboxes-linux-amd64-ubuntu2404.deb" | sha256sum -c -
-          sudo apt-get install -y ./DockerSandboxes-linux-amd64-ubuntu2404.deb
+          gh release download "$SBX_VERSION" -R docker/sbx-releases -p 'DockerSandboxes-linux-amd64-ubuntu2604.deb'
+          echo "$SBX_DEB_SHA256  DockerSandboxes-linux-amd64-ubuntu2604.deb" | sha256sum -c -
+          sudo apt-get install -y ./DockerSandboxes-linux-amd64-ubuntu2604.deb
 
       # ponytail: assumes `sbx kit sign` on an OCI ref works without sandboxd/`sbx login`; if not, swap for cosign
       - if: github.event_name != 'pull_request'
