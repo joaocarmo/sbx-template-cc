@@ -32,8 +32,11 @@ CI builds linux/arm64 only (Apple silicon hosts), pushes to Docker Hub and signs
 ## Upstream updates
 
 [Renovate](https://docs.renovatebot.com/) (`renovate.json`) opens PRs bumping the upstream
-`sbx-kit-claude` tag + digest, the `sbx` CLI used for signing, and GitHub Actions.
-Merge, then tag a release.
+`sbx-kit-claude` tag + digest, the `docker/sandbox-kit` build frontend digest, the `sbx` CLI
+used for signing, and GitHub Actions (SHA-pinned). Merge, then tag a release.
+
+An `sbx` bump fails CI until you update `SBX_DEB_SHA256` in the workflow
+(`sha256sum DockerSandboxes-linux-amd64-ubuntu2404.deb` from the new release).
 
 Manual bump: update `ref` and `digest` in `claude-extended/claude-extended.yaml`
 (`docker buildx imagetools inspect docker.io/docker/sbx-kit-claude:<tag>` → top-level `Digest`).

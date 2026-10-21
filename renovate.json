@@ -1,11 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
+  "extends": ["config:best-practices"],
   "customManagers": [
     {
       "customType": "regex",
       "managerFilePatterns": ["/^claude-extended/claude-extended\\.yaml$/"],
       "matchStrings": [
+        "# syntax=(?<depName>docker/sandbox-kit):(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[a-f0-9]{64})",
         "ref: (?<depName>docker\\.io/docker/sbx-kit-claude):(?<currentValue>\\S+)\\s+digest: (?<currentDigest>sha256:[a-f0-9]{64})"
       ],
       "datasourceTemplate": "docker"

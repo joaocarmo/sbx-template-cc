@@ -1,6 +1,6 @@
-# syntax=docker/sandbox-kit:3
+# syntax=docker/sandbox-kit:3@sha256:e6a397771e865625047cf84256a914c7974b3e749d858259b5bc9c653ddb6f0d
 schemaVersion: "3"
 kind: set
 kits:
-  - ref: docker.io/docker/sbx-kit-claude:2.1.267
-    digest: sha256:f3136cac8739534ba89d2bc0026b4f5dcfc2ca07e17947a9108dc5aabb176522
+  - ref: docker.io/docker/sbx-kit-claude:2.1.296
+    digest: sha256:c0132e89a89d94ddca3984513afdb36be57bd087fcc75823a4d14064b6a39ea5

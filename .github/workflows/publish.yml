@@ -12,16 +12,30 @@ permissions:
 env:
   IMAGE: docker.io/${{ secrets.DOCKERHUB_NAMESPACE }}/claude-extended
   SBX_VERSION: v0.49.1
+  # Bump together with SBX_VERSION: sha256 of DockerSandboxes-linux-amd64-ubuntu2404.deb
+  SBX_DEB_SHA256: 9536d6a07270aa7a75752106d90257115bce20898056b4d798bc48f67c116bf9
 
 jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
-      - uses: docker/setup-buildx-action@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      # Runs on PRs too, so a Renovate SBX_VERSION bump fails CI until the checksum is updated.
+      - name: Install sbx
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "$SBX_VERSION" -R docker/sbx-releases -p 'DockerSandboxes-linux-amd64-ubuntu2404.deb'
+          echo "$SBX_DEB_SHA256  DockerSandboxes-linux-amd64-ubuntu2404.deb" | sha256sum -c -
+          sudo apt-get install -y ./DockerSandboxes-linux-amd64-ubuntu2404.deb
 
       - if: github.ref_type == 'tag'
-        uses: docker/login-action@v3
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -31,7 +45,7 @@ jobs:
         run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
       - id: build
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: claude-extended
           file: claude-extended/claude-extended.yaml
@@ -42,9 +56,5 @@ jobs:
       # ponytail: assumes `sbx kit sign` on an OCI ref works without sandboxd/`sbx login`; if not, swap for `cosign sign --yes`
       - if: github.ref_type == 'tag'
         env:
-          GH_TOKEN: ${{ github.token }}
           DIGEST: ${{ steps.build.outputs.digest }}
-        run: |
-          gh release download "$SBX_VERSION" -R docker/sbx-releases -p 'DockerSandboxes-linux-amd64-ubuntu2404.deb'
-          sudo apt-get install -y ./DockerSandboxes-linux-amd64-ubuntu2404.deb
-          sbx kit sign "$IMAGE@$DIGEST"
+        run: sbx kit sign "$IMAGE@$DIGEST"
