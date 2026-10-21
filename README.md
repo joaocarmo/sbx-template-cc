@@ -26,10 +26,14 @@ sbx kit verify docker.io/<namespace>/claude-extended:<version> \
 git tag v1.0.0 && git push --tags
 ```
 
-CI builds linux/amd64 + linux/arm64, pushes to Docker Hub and signs. Needs repo secrets
+CI builds linux/arm64 only (Apple silicon hosts), pushes to Docker Hub and signs. Needs repo secrets
 `DOCKERHUB_NAMESPACE`, `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`.
 
-## Bump upstream Claude kit
+## Upstream updates
 
-Update `ref` and `digest` in `claude-extended/claude-extended.yaml`
-(`docker buildx imagetools inspect docker.io/docker/sbx-kit-claude:<tag>` → top-level `Digest`), then tag a release.
+[Renovate](https://docs.renovatebot.com/) (`renovate.json`) opens PRs bumping the upstream
+`sbx-kit-claude` tag + digest, the `sbx` CLI used for signing, and GitHub Actions.
+Merge, then tag a release.
+
+Manual bump: update `ref` and `digest` in `claude-extended/claude-extended.yaml`
+(`docker buildx imagetools inspect docker.io/docker/sbx-kit-claude:<tag>` → top-level `Digest`).

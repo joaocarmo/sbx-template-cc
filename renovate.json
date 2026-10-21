@@ -1,0 +1,21 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^claude-extended/claude-extended\\.yaml$/"],
+      "matchStrings": [
+        "ref: (?<depName>docker\\.io/docker/sbx-kit-claude):(?<currentValue>\\S+)\\s+digest: (?<currentDigest>sha256:[a-f0-9]{64})"
+      ],
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/publish\\.yml$/"],
+      "matchStrings": ["SBX_VERSION: (?<currentValue>v\\S+)"],
+      "depNameTemplate": "docker/sbx-releases",
+      "datasourceTemplate": "github-releases"
+    }
+  ]
+}
