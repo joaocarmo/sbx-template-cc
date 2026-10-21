@@ -21,9 +21,6 @@ sbx kit verify docker.io/<namespace>/claude-extended:latest \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 
-Images also carry signed SLSA provenance from
-[`docker/github-builder`](https://github.com/docker/github-builder).
-
 ## Release
 
 Automatic: every push to `main` builds, pushes and signs. PRs build only.

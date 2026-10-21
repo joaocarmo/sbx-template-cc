@@ -12,56 +12,58 @@ concurrency:
   group: publish-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+env:
+  IMAGE: docker.io/${{ vars.DOCKERHUB_NAMESPACE }}/claude-extended
+  SBX_VERSION: v0.49.1
+  # Bump together with SBX_VERSION: sha256 of DockerSandboxes-linux-amd64-ubuntu2404.deb
+  SBX_DEB_SHA256: 9536d6a07270aa7a75752106d90257115bce20898056b4d798bc48f67c116bf9
+
 jobs:
-  upstream:
+  # docker/github-builder fails here: its BuildKit lacks moby.buildkit.frontend.inputs, which the sandbox-kit frontend needs.
+  build:
     runs-on: ubuntu-24.04
-    outputs:
-      version: ${{ steps.version.outputs.version }}
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - id: version
+
+      - id: upstream
         run: |
           version=$(sed -n 's|.*docker/sbx-kit-claude:\([^[:space:]]*\).*|\1|p' claude-extended/claude-extended.yaml)
           test -n "$version"
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-  build:
-    needs: upstream
-    uses: docker/github-builder/.github/workflows/build.yml@4345a1cea1e4cfb65c8a5e2b1b80f9e630068827 # v1.18.0
-    permissions:
-      contents: read
-      id-token: write
-    with:
-      output: image
-      push: ${{ github.event_name != 'pull_request' }}
-      # ponytail: repo-root context (as in github-builder's own tests); fine while the set ships no files
-      file: claude-extended/claude-extended.yaml
-      platforms: linux/arm64
-      meta-images: docker.io/${{ vars.DOCKERHUB_NAMESPACE }}/claude-extended
-      meta-tags: |
-        type=raw,value=${{ needs.upstream.outputs.version }},enable={{is_default_branch}}
-        type=raw,value=latest,enable={{is_default_branch}}
-        type=sha,format=long
-        type=ref,event=pr
-    secrets:
-      registry-auths: |
-        - registry: docker.io
+      - id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=raw,value=${{ steps.upstream.outputs.version }},enable={{is_default_branch}}
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,format=long
+            type=ref,event=pr
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - if: github.event_name != 'pull_request'
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
           username: ${{ vars.DOCKERHUB_NAMESPACE }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  sign:
-    needs: build
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-      id-token: write
-    env:
-      SBX_VERSION: v0.49.1
-      # Bump together with SBX_VERSION: sha256 of DockerSandboxes-linux-amd64-ubuntu2404.deb
-      SBX_DEB_SHA256: 9536d6a07270aa7a75752106d90257115bce20898056b4d798bc48f67c116bf9
-    steps:
+      - id: build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: claude-extended
+          file: claude-extended/claude-extended.yaml
+          platforms: linux/arm64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
       # Runs on PRs too, so a Renovate SBX_VERSION bump fails CI until the checksum is updated.
       - name: Install sbx
         env:
@@ -71,14 +73,8 @@ jobs:
           echo "$SBX_DEB_SHA256  DockerSandboxes-linux-amd64-ubuntu2404.deb" | sha256sum -c -
           sudo apt-get install -y ./DockerSandboxes-linux-amd64-ubuntu2404.deb
 
-      - if: github.event_name != 'pull_request'
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
-        with:
-          username: ${{ vars.DOCKERHUB_NAMESPACE }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       # ponytail: assumes `sbx kit sign` on an OCI ref works without sandboxd/`sbx login`; if not, swap for cosign
       - if: github.event_name != 'pull_request'
         env:
-          IMAGE: docker.io/${{ vars.DOCKERHUB_NAMESPACE }}/claude-extended@${{ needs.build.outputs.digest }}
-        run: sbx kit sign "$IMAGE"
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: sbx kit sign "$IMAGE@$DIGEST"
