@@ -1,0 +1,6 @@
+# syntax=docker/sandbox-kit:3
+schemaVersion: "3"
+kind: set
+kits:
+  - ref: docker.io/docker/sbx-kit-claude:2.1.267
+    digest: sha256:f3136cac8739534ba89d2bc0026b4f5dcfc2ca07e17947a9108dc5aabb176522
