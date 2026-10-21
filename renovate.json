@@ -11,7 +11,7 @@
       ],
       "matchStrings": [
         "# syntax=(?<depName>docker/sandbox-kit):(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[a-f0-9]{64})",
-        "ref: (?<depName>docker\\.io/docker/sbx-kit-claude):(?<currentValue>\\S+)\\s+digest: (?<currentDigest>sha256:[a-f0-9]{64})"
+        "ref: (?<depName>[^:\\s]+):(?<currentValue>\\S+)\\s+digest: (?<currentDigest>sha256:[a-f0-9]{64})"
       ],
       "datasourceTemplate": "docker"
     },

@@ -1,8 +1,12 @@
 # claude-extended
 
 A [Docker Sandboxes](https://docs.docker.com/ai/sandboxes/) kit for Claude Code.
-It currently adds nothing to Docker's
-[`sbx-kit-claude`](https://docs.docker.com/ai/sandboxes/customize/use-kits/#published-v3-workloads).
+It extends Docker's
+[`sbx-kit-claude`](https://docs.docker.com/ai/sandboxes/customize/use-kits/#published-v3-workloads) with:
+
+- [`git-ssh-sign`](https://github.com/docker/sbx-kits-contrib/tree/v3/git-ssh-sign): signs commits
+  and tags with your host's SSH key (run `ssh-add` on the host first).
+
 Built for Apple silicon (linux/arm64).
 
 ## Usage
