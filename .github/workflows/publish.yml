@@ -3,6 +3,7 @@ name: publish
 on:
   push:
     branches: [main]
+    paths: [claude-extended/**, .github/workflows/publish.yml]
   pull_request:
 
 permissions:
