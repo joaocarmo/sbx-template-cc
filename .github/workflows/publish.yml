@@ -15,8 +15,8 @@ concurrency:
 
 env:
   IMAGE: docker.io/${{ vars.DOCKERHUB_NAMESPACE }}/claude-extended
+  # Renovate bumps both; the sha256 is of DockerSandboxes-linux-amd64-ubuntu2604.deb
   SBX_VERSION: v0.49.1
-  # Bump together with SBX_VERSION: sha256 of DockerSandboxes-linux-amd64-ubuntu2604.deb
   SBX_DEB_SHA256: 3d105f3e2e40064ebecbe3eb598fa71247436362210be4e8d34fdb8d3c1f9945
 
 jobs:
@@ -65,7 +65,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      # Runs on PRs too, so a Renovate SBX_VERSION bump fails CI until the checksum is updated.
+      # Runs on PRs too, so a bad sbx bump fails CI before merge.
       - name: Install sbx
         env:
           GH_TOKEN: ${{ github.token }}
@@ -74,7 +74,6 @@ jobs:
           echo "$SBX_DEB_SHA256  DockerSandboxes-linux-amd64-ubuntu2604.deb" | sha256sum -c -
           sudo apt-get install -y ./DockerSandboxes-linux-amd64-ubuntu2604.deb
 
-      # ponytail: assumes `sbx kit sign` on an OCI ref works without sandboxd/`sbx login`; if not, swap for cosign
       - if: github.event_name != 'pull_request'
         env:
           DIGEST: ${{ steps.build.outputs.digest }}

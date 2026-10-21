@@ -33,8 +33,7 @@ BUILDX_BUILDER=kit sbx run ./claude-extended --name dev
 Every push to `main` builds, pushes and signs the image. Pull requests only build.
 
 [Renovate](https://github.com/apps/renovate) keeps dependencies up to date and automerges
-non-major updates. When it bumps `SBX_VERSION`, update `SBX_DEB_SHA256` in
-`.github/workflows/publish.yml` to match the new release.
+non-major updates.
 
 CI needs the repo variable `DOCKERHUB_NAMESPACE` and the secret `DOCKERHUB_TOKEN`
 (Docker Hub access token, Read & Write).

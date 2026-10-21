@@ -21,10 +21,10 @@
         "/^\\.github/workflows/publish\\.yml$/"
       ],
       "matchStrings": [
-        "SBX_VERSION: (?<currentValue>v\\S+)"
+        "SBX_VERSION: (?<currentValue>v\\S+)\\s+SBX_DEB_SHA256: (?<currentDigest>[a-f0-9]{64})"
       ],
       "depNameTemplate": "docker/sbx-releases",
-      "datasourceTemplate": "github-releases"
+      "datasourceTemplate": "github-release-attachments"
     }
   ],
   "packageRules": [
