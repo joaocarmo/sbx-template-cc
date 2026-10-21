@@ -1,39 +1,44 @@
 # claude-extended
 
-Docker Sandboxes v3 kit for Claude Code. Currently a vanilla set over
-[`docker/sbx-kit-claude`](https://docs.docker.com/ai/sandboxes/customize/use-kits/#published-v3-workloads).
-Built for linux/arm64 only (Apple silicon hosts). Requires `sbx` v0.45+.
+A [Docker Sandboxes](https://docs.docker.com/ai/sandboxes/) kit for Claude Code.
+It currently adds nothing to Docker's
+[`sbx-kit-claude`](https://docs.docker.com/ai/sandboxes/customize/use-kits/#published-v3-workloads).
+Built for Apple silicon (linux/arm64).
 
-## Run
+## Usage
 
 ```console
-sbx run docker.io/<namespace>/claude-extended:latest --name my-project
-sbx run ./claude-extended --name dev   # from source
+sbx run docker.io/joaopestana/claude-extended:latest --name my-project
 ```
 
-Tags: `latest`, `<upstream Claude version>` (both move), `sha-<commit>` (immutable).
+Tags: `latest` and `<claude version>` move; `sha-<commit>` doesn't.
 
-## Verify signature
+Verify the signature:
 
 ```console
-sbx kit verify docker.io/<namespace>/claude-extended:latest \
-  --certificate-identity https://github.com/<org>/<repo>/.github/workflows/publish.yml@refs/heads/main \
+sbx kit verify docker.io/joaopestana/claude-extended:latest \
+  --certificate-identity https://github.com/joaocarmo/sbx-template-cc/.github/workflows/publish.yml@refs/heads/main \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 
-## Release
+## Development
 
-Automatic: every push to `main` builds, pushes and signs. PRs build only.
+Run from source (needs a `docker-container` buildx builder):
 
-[Renovate](https://docs.renovatebot.com/) (`renovate.json`) opens PRs for the upstream
-`sbx-kit-claude` tag + digest, the `docker/sandbox-kit` frontend digest, the `sbx` CLI and
-GitHub Actions (SHA-pinned), and automerges non-major ones when CI is green.
+```console
+docker buildx create --name kit --driver docker-container
+BUILDX_BUILDER=kit sbx run ./claude-extended --name dev
+```
 
-An `sbx` bump fails CI until you update `SBX_DEB_SHA256` in the workflow
-(`sha256sum DockerSandboxes-linux-amd64-ubuntu2404.deb` from the new release).
+Every push to `main` builds, pushes and signs the image. Pull requests only build.
 
-## Setup
+[Renovate](https://github.com/apps/renovate) keeps dependencies up to date and automerges
+non-major updates. When it bumps `SBX_VERSION`, update `SBX_DEB_SHA256` in
+`.github/workflows/publish.yml` to match the new release.
 
-- Repo variable `DOCKERHUB_NAMESPACE`: Docker Hub username.
-- Repo secret `DOCKERHUB_TOKEN`: Docker Hub personal access token, Read & Write.
-- Install the [Renovate GitHub App](https://github.com/apps/renovate) on the repo.
+CI needs the repo variable `DOCKERHUB_NAMESPACE` and the secret `DOCKERHUB_TOKEN`
+(Docker Hub access token, Read & Write).
+
+## License
+
+[MIT](LICENSE)
