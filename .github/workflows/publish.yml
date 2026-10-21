@@ -22,7 +22,7 @@ env:
 jobs:
   # docker/github-builder fails here: its BuildKit lacks moby.buildkit.frontend.inputs, which the sandbox-kit frontend needs.
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
       id-token: write
