@@ -4,6 +4,9 @@
     "config:best-practices"
   ],
   "assigneesFromCodeOwners": true,
+  "labels": [
+    "dependencies"
+  ],
   "customManagers": [
     {
       "customType": "regex",
