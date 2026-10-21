@@ -1,10 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:best-practices"],
+  "extends": [
+    "config:best-practices"
+  ],
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": ["/^claude-extended/claude-extended\\.yaml$/"],
+      "managerFilePatterns": [
+        "/^claude-extended/claude-extended\\.yaml$/"
+      ],
       "matchStrings": [
         "# syntax=(?<depName>docker/sandbox-kit):(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[a-f0-9]{64})",
         "ref: (?<depName>docker\\.io/docker/sbx-kit-claude):(?<currentValue>\\S+)\\s+digest: (?<currentDigest>sha256:[a-f0-9]{64})"
@@ -13,10 +17,26 @@
     },
     {
       "customType": "regex",
-      "managerFilePatterns": ["/^\\.github/workflows/publish\\.yml$/"],
-      "matchStrings": ["SBX_VERSION: (?<currentValue>v\\S+)"],
+      "managerFilePatterns": [
+        "/^\\.github/workflows/publish\\.yml$/"
+      ],
+      "matchStrings": [
+        "SBX_VERSION: (?<currentValue>v\\S+)"
+      ],
       "depNameTemplate": "docker/sbx-releases",
       "datasourceTemplate": "github-releases"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Automerge non-major updates once CI is green (each merge to main publishes)",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest",
+        "pinDigest"
+      ],
+      "automerge": true
     }
   ]
 }
