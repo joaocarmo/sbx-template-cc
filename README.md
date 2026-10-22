@@ -27,13 +27,15 @@ sbx run docker.io/joaopestana/claude-extended:latest --name my-project --clone
 git fetch sandbox-my-project
 ```
 
-Verify the signature:
+Make sbx refuse the kit unless CI signed it (keeps Docker's default signer):
 
 ```console
-sbx kit verify docker.io/joaopestana/claude-extended:latest \
-  --certificate-identity https://github.com/joaocarmo/sbx-template-cc/.github/workflows/publish.yml@refs/heads/main \
-  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+sbx settings set kit.trustedSigners '[{"identityRegexp":"^.*@docker\\.com$","issuer":"https://accounts.google.com"},{"identity":"https://github.com/joaocarmo/sbx-template-cc/.github/workflows/publish.yml@refs/heads/main","issuer":"https://token.actions.githubusercontent.com"}]'
+sbx settings set kit.requireSignature true
 ```
+
+Built-in agents (`sbx run claude`) are exempt; unsigned kits, including Docker's by OCI reference and
+local builds, are refused.
 
 ## Personal configuration
 
@@ -63,6 +65,9 @@ Run from source (needs a `docker-container` buildx builder):
 docker buildx create --name kit --driver docker-container
 BUILDX_BUILDER=kit sbx run ./claude-extended --name dev
 ```
+
+With signatures required, run `sbx settings set kit.requireSignature false` first (the env var doesn't
+reach the daemon), and set it back to `true` afterwards.
 
 Every push to `main` builds, pushes and signs the image. Pull requests only build.
 
