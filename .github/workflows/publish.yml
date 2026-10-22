@@ -58,6 +58,7 @@ jobs:
         run: |
           mkdir -p ~/.config/claude-sbx
           echo smoke > ~/.config/claude-sbx/CLAUDE.md
+          sbx policy init balanced
           sbx run ./claude-extended -d --name ci . ~/.config/claude-sbx:ro
           sbx exec ci claude --version
           sbx exec ci grep -qx smoke /home/agent/.claude/rules/claude-sbx.md
