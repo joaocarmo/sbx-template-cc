@@ -35,6 +35,28 @@ sbx kit verify docker.io/joaopestana/claude-extended:latest \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 
+## Personal configuration
+
+Sandboxes don't read your host's `~/.claude`. Skills and MCP servers are added from the host instead
+(see `sbx skills --help` and the [MCP gateway docs](https://docs.docker.com/ai/sandboxes/mcp-gateway/)):
+
+```console
+sbx skills import   # copies from ~/.claude/skills, ~/.agents/skills, …
+sbx skills add owner/repo
+sbx mcp add linear --url https://mcp.linear.app/mcp   # OAuth tokens stay on the host
+sbx run docker.io/joaopestana/claude-extended:latest --name my-project --static-mcp linear
+```
+
+For a global `CLAUDE.md`, mount a dedicated folder read-only (not `~/.claude`, which holds
+transcripts and settings) and import it once per sandbox. Host edits apply from the next session.
+Local sandboxes only:
+
+```console
+sbx create docker.io/joaopestana/claude-extended:latest --name my-project . ~/.config/claude-sbx:ro
+sbx exec my-project sh -c "echo '@$HOME/.config/claude-sbx/CLAUDE.md' >> ~/.claude/CLAUDE.md"
+sbx run --name my-project
+```
+
 ## Development
 
 Run from source (needs a `docker-container` buildx builder):
