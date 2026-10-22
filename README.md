@@ -69,13 +69,13 @@ BUILDX_BUILDER=kit sbx run ./claude-extended --name dev
 With signatures required, run `sbx settings set kit.requireSignature false` first (the env var doesn't
 reach the daemon), and set it back to `true` afterwards.
 
-Every push to `main` builds, pushes and signs the image. Pull requests only build.
+Every push to `main` smoke-tests, builds, pushes and signs the image. Pull requests smoke-test and build.
 
 [Renovate](https://github.com/apps/renovate) keeps dependencies up to date and automerges
 non-major updates.
 
 CI needs the repo variable `DOCKERHUB_NAMESPACE` and the secret `DOCKERHUB_TOKEN`
-(Docker Hub access token, Read & Write).
+(Docker Hub access token, Read & Write), plus `DOCKERHUB_READ_TOKEN` (Read-only) for the smoke test.
 
 ## License
 

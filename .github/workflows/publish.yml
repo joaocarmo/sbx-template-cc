@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths: [claude-extended/**, .github/workflows/publish.yml]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -20,9 +21,52 @@ env:
   SBX_DEB_SHA256: af206c854b398832889b3cdbe3c952a7f0fbb66c6a9da252e40f64398ce818dd
 
 jobs:
+  # Boots the kit from source in a real sandbox. Runners only have KVM on x86, so this is an amd64
+  # build; the published arm64 image can't boot here.
+  test:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # sbx builds the source kit with buildx, which needs a builder that can export OCI.
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Install sbx
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "$SBX_VERSION" -R docker/sbx-releases -p 'DockerSandboxes-linux-amd64-ubuntu2604.deb'
+          echo "$SBX_DEB_SHA256  DockerSandboxes-linux-amd64-ubuntu2604.deb" | sha256sum -c -
+          sudo apt-get install -y ./DockerSandboxes-linux-amd64-ubuntu2604.deb
+
+      - name: Enable KVM
+        run: |
+          sudo chmod 666 /dev/kvm
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      - name: Sign in to sbx
+        env:
+          USERNAME: ${{ vars.DOCKERHUB_NAMESPACE }}
+          TOKEN: ${{ secrets.DOCKERHUB_READ_TOKEN }}
+        run: printf '%s' "$TOKEN" | sbx login --username "$USERNAME" --password-stdin
+
+      # The hook's /*/*/.config glob matches $HOME=/home/runner
+      - name: Smoke test
+        run: |
+          mkdir -p ~/.config/claude-sbx
+          echo smoke > ~/.config/claude-sbx/CLAUDE.md
+          sbx run ./claude-extended -d --name ci . ~/.config/claude-sbx:ro
+          sbx exec ci claude --version
+          sbx exec ci grep -qx smoke /home/agent/.claude/rules/claude-sbx.md
+
   # docker/github-builder fails here: its BuildKit lacks moby.buildkit.frontend.inputs, which the sandbox-kit frontend needs.
   build:
+    needs: test
     runs-on: ubuntu-26.04
+    timeout-minutes: 15
     permissions:
       contents: read
       id-token: write
@@ -65,8 +109,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      # Runs on PRs too, so a bad sbx bump fails CI before merge.
-      - name: Install sbx
+      - if: github.event_name != 'pull_request'
+        name: Install sbx
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
