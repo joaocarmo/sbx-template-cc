@@ -47,14 +47,12 @@ sbx mcp add linear --url https://mcp.linear.app/mcp   # OAuth tokens stay on the
 sbx run docker.io/joaopestana/claude-extended:latest --name my-project --static-mcp linear
 ```
 
-For a global `CLAUDE.md`, mount a dedicated folder read-only (not `~/.claude`, which holds
-transcripts and settings) and import it once per sandbox. Host edits apply from the next session.
-Local sandboxes only:
+For a global `CLAUDE.md`, put it in `~/.config/claude-sbx/` and mount that folder read-only (not
+`~/.claude`, which holds transcripts and settings). The kit links it into `~/.claude/rules/`; host
+edits apply from the next session. Local sandboxes only:
 
 ```console
-sbx create docker.io/joaopestana/claude-extended:latest --name my-project . ~/.config/claude-sbx:ro
-sbx exec my-project sh -c "echo '@$HOME/.config/claude-sbx/CLAUDE.md' >> ~/.claude/CLAUDE.md"
-sbx run --name my-project
+sbx run docker.io/joaopestana/claude-extended:latest --name my-project . ~/.config/claude-sbx:ro
 ```
 
 ## Development
