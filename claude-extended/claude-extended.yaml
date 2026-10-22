@@ -31,7 +31,7 @@ capabilities:
               for f in /*/*/.config/claude-sbx/CLAUDE.md; do
                 [ -f "$f" ] || continue
                 mkdir -p /home/agent/.claude/rules
-                ln -sfn "$f" /home/agent/.claude/rules/claude-sbx.md
+                ln -sfn "$f" /home/agent/.claude/rules/broken.md
               done
           user: "1000"
           description: Link a mounted ~/.config/claude-sbx/CLAUDE.md into ~/.claude/rules
