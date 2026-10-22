@@ -20,3 +20,18 @@ capabilities:
   - type: com.docker.sandbox/git-identity@1
     optional: true
     description: Attribute commits to the host's git identity
+  # Mounts keep their host path, so the glob finds ~/.config/claude-sbx on any host
+  - type: com.docker.sandbox/lifecycle@1
+    config:
+      startup:
+        - command:
+            - sh
+            - -c
+            - |
+              for f in /*/*/.config/claude-sbx/CLAUDE.md; do
+                [ -f "$f" ] || continue
+                mkdir -p /home/agent/.claude/rules
+                ln -sfn "$f" /home/agent/.claude/rules/claude-sbx.md
+              done
+          user: "1000"
+          description: Link a mounted ~/.config/claude-sbx/CLAUDE.md into ~/.claude/rules
