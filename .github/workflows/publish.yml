@@ -17,8 +17,8 @@ concurrency:
 env:
   IMAGE: docker.io/${{ vars.DOCKERHUB_NAMESPACE }}/claude-extended
   # Renovate bumps both; the sha256 is of DockerSandboxes-linux-amd64-ubuntu2604.deb
-  SBX_VERSION: v0.50.0
-  SBX_DEB_SHA256: 91082b11c616448913042b52fba5f1ed9f3c620a68cfb22714b4a83aea22ecd1
+  SBX_VERSION: v0.50.1
+  SBX_DEB_SHA256: ae77453183feeea2a6006cd6c981a4df8aebeb54dfc0721fe1d8af2bfefe74d6
 
 jobs:
   # Boots the kit from source in a real sandbox. Runners only have KVM on x86, so this is an amd64
