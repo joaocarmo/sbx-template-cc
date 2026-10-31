@@ -5,7 +5,7 @@ kits:
   - ref: docker.io/docker/sbx-kit-claude:2.1.314
     digest: sha256:5698d4430c206770c1243c7ac08a504133b0c31b2ae6ef002efb46653b156b76
   - ref: docker.io/sbx/git-ssh-sign:1.0.1
-    digest: sha256:3b527d9504b3dcfc689281d7e48e1c28ad28adc4caa23a7d53f41ead498aa55e
+    digest: sha256:b402cc3c78106885c69f137468c47007da7a636f5aaf928410aeaef62bf4d1ff
   - ref: docker.io/sbx/claude-sbx-statusline:1.0.0
     digest: sha256:94421a88c763f596e5453644d5e93c90aa5c7317fa4dbd4d2059868c22a13572
 # git-ssh-sign (v3) doesn't request these itself yet
