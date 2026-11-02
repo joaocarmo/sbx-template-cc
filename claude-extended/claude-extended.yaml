@@ -2,8 +2,8 @@
 schemaVersion: "3"
 kind: set
 kits:
-  - ref: docker.io/docker/sbx-kit-claude:2.1.314
-    digest: sha256:5698d4430c206770c1243c7ac08a504133b0c31b2ae6ef002efb46653b156b76
+  - ref: docker.io/docker/sbx-kit-claude:2.1.316
+    digest: sha256:60a90df50354b1bb737b0f47bc2aad0475b36e019c65361173feace3efcf662a
   - ref: docker.io/sbx/git-ssh-sign:1.0.1
     digest: sha256:ba3997de9c10b8c17fc92e74679ddc68f9b7cc3ad2c7d8ebcd7d7ba523b1d8e2
   - ref: docker.io/sbx/claude-sbx-statusline:1.0.0
