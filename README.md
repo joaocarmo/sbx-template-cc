@@ -34,8 +34,8 @@ sbx settings set kit.trustedSigners '[{"identityRegexp":"^.*@docker\\.com$","iss
 sbx settings set kit.requireSignature true
 ```
 
-Built-in agents (`sbx run claude`) are exempt; unsigned kits, including Docker's by OCI reference and
-local builds, are refused.
+This refuses every unsigned kit: built-in agents such as `sbx run claude` (unsigned kits since sbx
+v0.51), Docker's kits by OCI reference and local builds.
 
 ## Personal configuration
 
