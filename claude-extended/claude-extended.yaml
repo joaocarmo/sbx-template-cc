@@ -8,15 +8,8 @@ kits:
     digest: sha256:d876d97128b3b19a63d5fb19cae6756e3cc0d102f6351c6d8d28cb0fd448db97
   - ref: docker.io/sbx/claude-sbx-statusline:1.0.0
     digest: sha256:91d13c7fa26653e88386212090fe3cacecbddbab7e782a2a70904ee7cd4f8f10
-# git-ssh-sign (v3) doesn't request these itself yet
 capabilities:
-  - type: com.docker.sandbox/ssh-agent@1
-    optional: true
-    description: Sign git commits and tags with the host's SSH key
-    config:
-      phase: runtime
-      unrestricted: false
-      sign: [git]
+  # git-ssh-sign doesn't request this itself yet
   - type: com.docker.sandbox/git-identity@1
     optional: true
     description: Attribute commits to the host's git identity
