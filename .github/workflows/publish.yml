@@ -17,8 +17,8 @@ concurrency:
 env:
   IMAGE: docker.io/${{ vars.DOCKERHUB_NAMESPACE }}/claude-extended
   # Renovate bumps both; the sha256 is of DockerSandboxes-linux-amd64-ubuntu2604.deb
-  SBX_VERSION: v0.51.0
-  SBX_DEB_SHA256: 739b9d3988097c7e127d952e2337ee7783f75148f0e9d3458c54ed3102fe56fa
+  SBX_VERSION: v0.53.0-rc2
+  SBX_DEB_SHA256: bf149c90cb8954ff510fd5b9ab9fe46bcba6d9c896bdd9136e8adcae35a7df7c
 
 jobs:
   # Boots the kit from source in a real sandbox. Runners only have KVM on x86, so this is an amd64
@@ -72,6 +72,10 @@ jobs:
           sbx exec ci claude --version
           sbx exec ci grep -qx smoke /home/agent/.claude/rules/claude-sbx.md
           test "$(sbx exec ci git ls-remote --get-url git@github.com:a/b)" = https://github.com/a/b
+          sbx version
+          sbx exec ci sh -c 'echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK"; ssh-add -l' || true
+          sbx exec ci sh -c 'command -v hostname || echo NO-HOSTNAME' || true
+          sbx exec ci sh -c 'ls /usr/share/sandbox/kit/claude-extended/' || true
 
   # docker/github-builder fails here: its BuildKit lacks moby.buildkit.frontend.inputs, which the sandbox-kit frontend needs.
   build:
