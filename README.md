@@ -57,6 +57,9 @@ edits apply from the next session. Local sandboxes only:
 sbx run docker.io/joaopestana/claude-extended:latest --name my-project . ~/.config/claude-sbx:ro
 ```
 
+The sandbox network policy blocks port 22, so the kit rewrites GitHub SSH remotes to HTTPS. Commit
+signing still uses your SSH agent.
+
 ## Development
 
 Run from source (needs a `docker-container` buildx builder):

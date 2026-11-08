@@ -28,3 +28,12 @@ capabilities:
               done
           user: "1000"
           description: Link a mounted ~/.config/claude-sbx/CLAUDE.md into ~/.claude/rules
+        # The sandbox policy blocks port 22, so SSH remotes to GitHub must use HTTPS
+        - command:
+            - sh
+            - -c
+            - |
+              mkdir -p /home/agent/.config/git
+              printf '[url "https://github.com/"]\n\tinsteadOf = git@github.com:\n\tinsteadOf = ssh://git@github.com/\n' > /home/agent/.config/git/config
+          user: "1000"
+          description: Rewrite GitHub SSH remotes to HTTPS
