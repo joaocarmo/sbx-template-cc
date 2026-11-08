@@ -47,6 +47,15 @@ jobs:
           sudo chmod 666 /dev/kvm
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
 
+      # git-ssh-sign requires a host SSH agent. The daemon starts at sign-in and inherits this socket.
+      - name: Start an SSH agent
+        run: |
+          eval "$(ssh-agent -s)"
+          mkdir -p ~/.ssh
+          ssh-keygen -q -t ed25519 -N '' -f ~/.ssh/ci
+          ssh-add ~/.ssh/ci
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+
       - name: Sign in to sbx
         env:
           USERNAME: ${{ vars.DOCKERHUB_NAMESPACE }}
