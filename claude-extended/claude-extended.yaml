@@ -37,3 +37,14 @@ capabilities:
               printf '[url "https://github.com/"]\n\tinsteadOf = git@github.com:\n\tinsteadOf = ssh://git@github.com/\n' > /home/agent/.config/git/config
           user: "1000"
           description: Rewrite GitHub SSH remotes to HTTPS
+        # The statusline calls hostname, which the claude base image doesn't ship
+        - command:
+            - sh
+            - -c
+            - |
+              command -v hostname >/dev/null && exit 0
+              mkdir -p /home/agent/.local/bin
+              printf '#!/bin/sh\nexec cat /proc/sys/kernel/hostname\n' > /home/agent/.local/bin/hostname
+              chmod +x /home/agent/.local/bin/hostname
+          user: "1000"
+          description: Provide a hostname command for the statusline

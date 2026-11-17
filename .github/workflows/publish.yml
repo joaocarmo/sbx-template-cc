@@ -72,6 +72,7 @@ jobs:
           sbx exec ci claude --version
           sbx exec ci grep -qx smoke /home/agent/.claude/rules/claude-sbx.md
           test "$(sbx exec ci git ls-remote --get-url git@github.com:a/b)" = https://github.com/a/b
+          test "$(sbx exec ci hostname)" = ci
 
   # docker/github-builder fails here: its BuildKit lacks moby.buildkit.frontend.inputs, which the sandbox-kit frontend needs.
   build:
