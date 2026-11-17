@@ -40,6 +40,7 @@ jobs:
         run: |
           gh release download "$SBX_VERSION" -R docker/sbx-releases -p 'DockerSandboxes-linux-amd64-ubuntu2604.deb'
           echo "$SBX_DEB_SHA256  DockerSandboxes-linux-amd64-ubuntu2604.deb" | sha256sum -c -
+          sudo apt-get update -q
           sudo apt-get install -y ./DockerSandboxes-linux-amd64-ubuntu2604.deb
 
       - name: Enable KVM
@@ -128,6 +129,7 @@ jobs:
         run: |
           gh release download "$SBX_VERSION" -R docker/sbx-releases -p 'DockerSandboxes-linux-amd64-ubuntu2604.deb'
           echo "$SBX_DEB_SHA256  DockerSandboxes-linux-amd64-ubuntu2604.deb" | sha256sum -c -
+          sudo apt-get update -q
           sudo apt-get install -y ./DockerSandboxes-linux-amd64-ubuntu2604.deb
 
       - if: github.event_name != 'pull_request'
