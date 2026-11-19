@@ -7,7 +7,7 @@ kits:
   - ref: docker.io/sbx/git-ssh-sign:1.0.3
     digest: sha256:36576a25fbe166c6f50ffc7e00966d6d961425159f1d32db5b48ae1609b8cccd
   - ref: docker.io/sbx/claude-sbx-statusline:1.0.0
-    digest: sha256:822791c0beb7a0aed2d43f322366470db6eeb1cf60e27acd52df5f9bda1bf08d
+    digest: sha256:c27715623ee917e8610094bc9fdae31654654386238e1c4940a9065136ffe31a
 capabilities:
   # git-ssh-sign doesn't request this itself yet
   - type: com.docker.sandbox/git-identity@1
