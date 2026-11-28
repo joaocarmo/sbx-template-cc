@@ -1,4 +1,4 @@
-# syntax=docker/sandbox-kit:3@sha256:e6a397771e865625047cf84256a914c7974b3e749d858259b5bc9c653ddb6f0d
+# syntax=docker/sandbox-kit:3@sha256:fcd2684c83ae7b17dd4b757d8ff1ab207908453cd457e013c21cc574fd6e20cd
 schemaVersion: "3"
 kind: set
 kits:
